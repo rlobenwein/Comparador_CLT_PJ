@@ -1,0 +1,74 @@
+﻿@rendermode InteractiveServer
+@inject ICalculatorService calculatorService;
+
+<div class="form-group">
+    <label for="periodicity">Periodicidade:</label>
+    <InputSelect @bind-Value="salary.Periodicity" id="periodicity" class="form-control">
+        @foreach (var periodicity in Enum.GetValues(typeof(Periodicity)).Cast<Periodicity>())
+        {
+            <option value="@periodicity">@periodicity.GetDisplayName()</option>
+        }
+    </InputSelect>
+</div>
+
+<div class="form-group">
+    <label for="amount">Valor do Salário:</label>
+    <InputNumber type="number" @bind-Value="salary.Amount" id="amount" class="form-control" />
+</div>
+
+<div class="form-group">
+    <label for="contractRegime">Regime de Contrato:</label>
+    <InputSelect @bind-Value="salary.ContractRegime" id="contractRegime" class="form-control">
+        @foreach (var regime in Enum.GetValues(typeof(ContractType)))
+        {
+            <option value="@regime">@regime</option>
+        }
+    </InputSelect>
+</div>
+
+<div class="form-group">
+    <label for="currency">Moeda:</label>
+    <InputSelect @bind-Value="salary.Currency" id="currency" class="form-control">
+        @foreach (var currency in Enum.GetValues(typeof(Currency)))
+        {
+            <option value="@currency">@currency</option>
+        }
+    </InputSelect>
+</div>
+
+<div class="form-group">
+    <label for="benefits">Benefícios:</label>
+    <InputNumber @bind-Value="salary.Benefits" id="benefits" class="form-control" />
+</div>
+
+
+<h4>Dados do Salário:</h4>
+<p>Periodicidade: @salary.Periodicity.GetDisplayName()</p>
+<p>Valor: @salary.Amount.ToString("#,##0.00")</p>
+<p>Regime de Contrato: @salary.ContractRegime</p>
+<p>Moeda: @salary.Currency</p>
+<p>Benefícios: @salary.Benefits.ToString("#,##0.00")</p>
+<p>Líquido: @netSalary.ToString("#,##0.00")</p>
+
+<button class="btn btn-primary" @onclick="Calc">Click me</button>
+
+@code {
+    private Salary salary = new Salary();
+    private decimal netSalary = 0;
+    private string strNetSalary = "";
+
+    private void Calc()
+    {
+        try
+        {
+            netSalary = calculatorService.CalculateNetCLT(salary);
+            strNetSalary = netSalary.ToString("#,##0.00");
+            Debug.WriteLine("Submit successful");
+            Console.WriteLine($"Submit successful");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error during calculation: {ex.Message}");
+        }
+    }
+}
